@@ -2,9 +2,11 @@
 le voy añadir funciones y exportarlas */
 const controller = {};
 
-controller.index = (req, res) => {
-    res.render('index');
-    // res.send('<h1>Hola Mundo</h1>');
+const { Image } = require('../models');
+
+controller.index = async(req, res) => {
+    const images = await Image.find().sort({ timestamp: -1 });
+    res.render('index', { images });
 }
 
 controller.create = (req, res) => {

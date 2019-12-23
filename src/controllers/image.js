@@ -7,7 +7,18 @@ const { Image } = require('../models');
 const { randomLetterAndNumber } = require('../helpers/libs');
 const controller = {};
 
-controller.index = (req, res) => {}
+controller.index = async(req, res) => {
+    try {
+        const { image_id } = req.params;
+
+        const imageId = await Image.findOne({ filename: { $regex: image_id } });
+
+        res.render('image', { imageId });
+
+    } catch (error) {
+        console.log(error);
+    }
+}
 
 controller.create = (req, res) => {
     const saveImage = async() => {
