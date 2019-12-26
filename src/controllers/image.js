@@ -1,8 +1,9 @@
 const pathExpress = require('path');
 const fs = require('fs-extra');
+const md5 = require('md5');
 
 /* Importo todos los Models desde el index.js*/
-const { Image } = require('../models');
+const { Image, Comment } = require('../models');
 
 const { randomLetterAndNumber } = require('../helpers/libs');
 const controller = {};
@@ -66,8 +67,31 @@ controller.like = (req, res) => {
     res.send('Index Page');
 }
 
-controller.comment = (req, res) => {
-    res.send('Index Page');
+controller.comment = async(req, res) => {
+    try {
+        const { image_id } = req.params;
+        const { name, email, comment } = req.body
+
+        const image = await Image.findOne({ filename: { $regex: image_id } });
+
+        // return console.log(image); Me devuelve un objeto y funciona para la validación
+
+        if (image) {
+            const newComment = new Comment({
+                name,
+                email,
+                comment
+            });
+            newComment.gravatar = md5(newComment.email); /* Aqui Estamo aplicando el modulo de gravatar md5 */
+            newComment.image_id = image._id; /* Obteniendo el id de la imagen que se consulto en DB */
+
+            await newComment.save();
+            res.redirect('/' + image.uniqueId);
+        }
+
+    } catch (error) {
+        console.log(error);
+    }
 }
 
 controller.remove = (req, res) => {
