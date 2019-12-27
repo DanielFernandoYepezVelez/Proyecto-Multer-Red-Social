@@ -12,9 +12,11 @@ controller.index = async(req, res) => {
     try {
         const { image_id } = req.params;
 
+        /* Aqui no obtengo el id de la imagen, yo estoy obteniendo todo el objeto image */
         const imageId = await Image.findOne({ filename: { $regex: image_id } });
+        const comments = await Comment.find({ image_id: imageId._id });
 
-        res.render('image', { imageId });
+        res.render('image', { imageId, comments });
 
     } catch (error) {
         console.log(error);
